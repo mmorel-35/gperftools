@@ -168,3 +168,6 @@
 /vendor/libbacktrace-integration/.dirstamp
 /vendor/libbacktrace/.deps
 /vendor/libbacktrace/.dirstamp
+
+# Bazel build artifacts
+/bazel-*
