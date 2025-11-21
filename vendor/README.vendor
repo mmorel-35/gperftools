@@ -26,7 +26,7 @@ To update libbacktrace:
 4. Verify symbol renaming (see below)
 5. cd ../.. && git add vendor/libbacktrace
 
-We dont use its autotools build infrastructure and integrate it ourselves
+We don't use its autotools build infrastructure and integrate it ourselves
 with mostly hardcoded config.h and our own Makefile.am bits. Those
 integration bits are in libbacktrace-integration in this subdirectory.
 Main motivation for such approach is that:
