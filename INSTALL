@@ -28,6 +28,14 @@ installed. And before running ./configure you have to generate it (and
 a bunch of other files) by running ./autogen.sh script. That script
 will take care of calling correct autotools programs in correct order.
 
+IMPORTANT: gperftools uses git submodules for vendored dependencies
+(googletest and libbacktrace). After cloning the repository or pulling
+updates, you must initialize the submodules:
+
+    git submodule update --init --recursive
+
+See vendor/README.vendor for more details about the vendored dependencies.
+
 If you're maintainer then it's business as usual too. Just run make
 dist (or, preferably, make distcheck) and it'll produce .tar.gz or
 .tar.bz2 with all autotools magic already included. So that users can

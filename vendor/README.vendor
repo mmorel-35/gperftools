@@ -1,3 +1,9 @@
+This directory contains git submodules for vendored dependencies.
+
+IMPORTANT: After cloning this repository or pulling updates that modify
+the submodule commits, you must initialize/update the submodules:
+
+    git submodule update --init --recursive
 
 == googletest
 
