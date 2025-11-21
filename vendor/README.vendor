@@ -17,11 +17,19 @@ To update googletest:
 
 libbacktrace is vendored as a git submodule from
 https://github.com/ianlancetaylor/libbacktrace.git at commit
-793921876c981ce49759114d7bb89bb89b2d3a2d. We dont use its
-autotools build infrastructure and integrate it ourselves with mostly
-hardcoded config.h and our own Makefile.am bits. Those integration
-bits are in libbacktrace-integration in this subdirectory. Main
-motivation for such approach is that:
+793921876c981ce49759114d7bb89bb89b2d3a2d.
+
+To update libbacktrace:
+1. cd vendor/libbacktrace
+2. git fetch origin
+3. git checkout <new-commit-or-tag>
+4. Verify symbol renaming (see below)
+5. cd ../.. && git add vendor/libbacktrace
+
+We dont use its autotools build infrastructure and integrate it ourselves
+with mostly hardcoded config.h and our own Makefile.am bits. Those
+integration bits are in libbacktrace-integration in this subdirectory.
+Main motivation for such approach is that:
 
 *) we only need symbolization subset
 
