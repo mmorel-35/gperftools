@@ -1,0 +1,14 @@
+{
+  "homepage": "https://github.com/gperftools/gperftools",
+  "maintainers": [
+    {
+      "github": "mering",
+      "github_user_id": 133344217
+    }
+  ],
+  "repository": [
+    "github:gperftools/gperftools"
+  ],
+  "versions": [],
+  "yanked_versions": {}
+}
