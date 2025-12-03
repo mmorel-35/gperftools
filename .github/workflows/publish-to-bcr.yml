@@ -31,8 +31,6 @@ jobs:
       draft: true
     permissions:
       contents: write
-      id-token: write
-      attestations: write
     secrets:
       # This token must be created as a Classic PAT with 'repo' and 'workflow' permissions
       # and stored as a repository secret named BCR_PUBLISH_TOKEN
