@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-latest, macos-13, macos-latest]
+        os: [ubuntu-latest, macos-latest]
         bazel: ['7.x', '8.x', '9.x']
     runs-on: ${{ matrix.os }}
     steps:
