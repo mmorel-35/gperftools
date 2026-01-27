@@ -1,0 +1,71 @@
+name: Bazel Presubmit
+
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+
+jobs:
+  bazel-unix:
+    name: Bazel ${{ matrix.bazel }} on ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, ubuntu-latest, macos-13, macos-latest]
+        bazel: ['7.x', '8.x', '9.x']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Bazel
+        uses: bazel-contrib/setup-bazel@0.9.0
+        with:
+          bazelisk-version: '1.x'
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+          bazelrc: |
+            build --enable_platform_specific_config
+            build --announce_rc
+      
+      - name: Configure Bazel version
+        run: |
+          echo "${{ matrix.bazel }}" > .bazelversion
+      
+      - name: Build and test cpu_profiler
+        run: bazel build @gperftools//:cpu_profiler
+      
+      - name: Build and test tcmalloc
+        run: bazel build @gperftools//:tcmalloc
+
+  bazel-windows:
+    name: Bazel ${{ matrix.bazel }} on Windows
+    strategy:
+      fail-fast: false
+      matrix:
+        bazel: ['7.x', '8.x', '9.x']
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Bazel
+        uses: bazel-contrib/setup-bazel@0.9.0
+        with:
+          bazelisk-version: '1.x'
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+          bazelrc: |
+            build --enable_platform_specific_config
+            build --announce_rc
+      
+      - name: Configure Bazel version
+        shell: bash
+        run: |
+          echo "${{ matrix.bazel }}" > .bazelversion
+      
+      - name: Build tcmalloc
+        run: bazel build @gperftools//:tcmalloc
