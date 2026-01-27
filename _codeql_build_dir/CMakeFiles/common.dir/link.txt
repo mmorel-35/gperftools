@@ -1,0 +1,2 @@
+/usr/bin/ar qc libcommon.a CMakeFiles/common.dir/src/base/logging.cc.o CMakeFiles/common.dir/src/base/generic_writer.cc.o CMakeFiles/common.dir/src/base/sysinfo.cc.o CMakeFiles/common.dir/src/base/proc_maps_iterator.cc.o CMakeFiles/common.dir/src/base/dynamic_annotations.cc.o CMakeFiles/common.dir/src/base/spinlock.cc.o CMakeFiles/common.dir/src/base/spinlock_internal.cc.o
+/usr/bin/ranlib libcommon.a

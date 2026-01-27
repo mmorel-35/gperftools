@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblibbacktrace.a "CMakeFiles/libbacktrace.dir/vendor/libbacktrace-integration/file-format.c.o" CMakeFiles/libbacktrace.dir/vendor/libbacktrace/dwarf.c.o CMakeFiles/libbacktrace.dir/vendor/libbacktrace/fileline.c.o CMakeFiles/libbacktrace.dir/vendor/libbacktrace/posix.c.o CMakeFiles/libbacktrace.dir/vendor/libbacktrace/sort.c.o CMakeFiles/libbacktrace.dir/vendor/libbacktrace/state.c.o CMakeFiles/libbacktrace.dir/vendor/libbacktrace/read.c.o
+/usr/bin/ranlib liblibbacktrace.a

@@ -1,0 +1,2 @@
+# Empty dependencies file for tcmalloc_minimal_debug.
+# This may be replaced when dependencies are built.
