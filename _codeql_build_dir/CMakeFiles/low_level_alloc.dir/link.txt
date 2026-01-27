@@ -1,2 +1,0 @@
-/usr/bin/ar qc liblow_level_alloc.a CMakeFiles/low_level_alloc.dir/src/base/low_level_alloc.cc.o
-/usr/bin/ranlib liblow_level_alloc.a

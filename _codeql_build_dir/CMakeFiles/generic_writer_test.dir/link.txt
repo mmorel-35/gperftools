@@ -1,1 +1,0 @@
-/home/runner/work/gperftools/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -Wall -Wwrite-strings -Woverloaded-virtual -Wno-sign-compare -fsized-deallocation -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/generic_writer_test.dir/link.d CMakeFiles/generic_writer_test.dir/src/tests/generic_writer_test.cc.o -o generic_writer_test  libcommon.a libgtest.a
