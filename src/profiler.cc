@@ -347,7 +347,7 @@ void CpuProfiler::prof_handler(int sig, siginfo_t*, void* signal_ucontext, void*
   }
 }
 
-#if !(defined(__CYGWIN__) || defined(__CYGWIN32__) || defined(_WIN32))
+#if !(defined(__CYGWIN__) || defined(__CYGWIN32__))
 
 extern "C" PERFTOOLS_DLL_DECL void ProfilerRegisterThread() { ProfileHandlerRegisterThread(); }
 
@@ -373,12 +373,12 @@ extern "C" PERFTOOLS_DLL_DECL int ProfilerGetStackTrace(void** result, int max_d
   return GetStackTraceWithContext(result, max_depth, skip_count, uc);
 }
 
-#else  // OS_CYGWIN or Windows
+#else  // OS_CYGWIN
 
-// ITIMER_PROF doesn't work under Cygwin or Windows. ITIMER_REAL is available on Cygwin,
-// but doesn't work as well for profiling, and also interferes with alarm(). Because of
+// ITIMER_PROF doesn't work under cygwin.  ITIMER_REAL is available, but doesn't
+// work as well for profiling, and also interferes with alarm().  Because of
 // these issues, unless a specific need is identified, profiler support is
-// disabled under Cygwin and Windows.
+// disabled under Cygwin.
 extern "C" void ProfilerRegisterThread() {}
 extern "C" void ProfilerFlush() {}
 extern "C" int ProfilingIsEnabledForAllThreads() { return 0; }
@@ -388,7 +388,7 @@ extern "C" void ProfilerStop() {}
 extern "C" void ProfilerGetCurrentState(ProfilerState* state) { memset(state, 0, sizeof(*state)); }
 extern "C" int ProfilerGetStackTrace(void** result, int max_depth, int skip_count, const void* uc) { return 0; }
 
-#endif  // OS_CYGWIN or Windows
+#endif  // OS_CYGWIN
 
 // DEPRECATED routines
 extern "C" PERFTOOLS_DLL_DECL void ProfilerEnable() {}

@@ -619,6 +619,7 @@ cc_library(
     ],
     hdrs = ["src/gperftools/profiler.h"],
     copts = CXXFLAGS,
+    target_compatible_with = NON_WINDOWS,
     visibility = ["//visibility:public"],
     deps = [
         ":all_headers",
