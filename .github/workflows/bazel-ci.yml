@@ -51,13 +51,16 @@ jobs:
       
       - name: Build additional core targets
         run: |
-          bazel build --verbose_failures //:stacktrace || true
-          bazel build --verbose_failures //:common || true
+          bazel build --verbose_failures //:stacktrace
+          bazel build --verbose_failures //:common
         continue-on-error: true
       
       - name: Query and build all buildable targets
         run: |
-          bazel query --keep_going 'kind("cc_.*", //...) except //vendor/...' 2>/dev/null | grep -E "^//" | grep -v "_test$" | xargs -r bazel build --keep_going --verbose_failures 2>&1 || echo "Some targets failed to build"
+          TARGETS=$(bazel query --keep_going 'kind("cc_.*", //...) except //vendor/...' 2>/dev/null | grep -E "^//" | grep -v "_test$" || echo "")
+          if [ -n "$TARGETS" ]; then
+            echo "$TARGETS" | xargs -r bazel build --keep_going --verbose_failures
+          fi
         continue-on-error: true
       
       - name: Run tests with proper filtering
@@ -65,7 +68,7 @@ jobs:
           # Query for test targets first
           TEST_TARGETS=$(bazel query --keep_going 'tests(//...) except //vendor/...' 2>/dev/null | grep -E "^//" || echo "")
           if [ -n "$TEST_TARGETS" ]; then
-            echo "$TEST_TARGETS" | xargs bazel test --test_output=errors --verbose_failures --keep_going 2>&1 || echo "Some tests failed"
+            echo "$TEST_TARGETS" | xargs bazel test --test_output=errors --verbose_failures --keep_going
           else
             echo "No test targets found"
           fi
@@ -97,13 +100,12 @@ jobs:
       
       - name: Build tcmalloc_minimal
         run: bazel build --verbose_failures //:tcmalloc_minimal
-        continue-on-error: true
       
       - name: Build additional Windows-compatible targets
         shell: bash
         run: |
-          bazel build --verbose_failures //:stacktrace || echo "stacktrace build failed"
-          bazel build --verbose_failures //:common || echo "common build failed"
+          bazel build --verbose_failures //:stacktrace
+          bazel build --verbose_failures //:common
         continue-on-error: true
       
       - name: Query and build Windows-compatible targets
@@ -113,7 +115,7 @@ jobs:
           TARGETS=$(bazel query --keep_going 'kind("cc_library", //...) except //vendor/... except attr("target_compatible_with", "NON_WINDOWS", //...)' 2>/dev/null | grep -E "^//" | grep -v "_test$" || echo "")
           if [ -n "$TARGETS" ]; then
             echo "$TARGETS" | while read target; do
-              bazel build --verbose_failures --keep_going "$target" 2>&1 || echo "Failed to build $target"
+              bazel build --verbose_failures --keep_going "$target" || echo "Failed to build $target"
             done
           else
             echo "No Windows-compatible targets found via query"
@@ -127,7 +129,7 @@ jobs:
           TEST_TARGETS=$(bazel query --keep_going 'tests(//...) except //vendor/... except attr("target_compatible_with", "NON_WINDOWS", tests(//...))' 2>/dev/null | grep -E "^//" || echo "")
           if [ -n "$TEST_TARGETS" ]; then
             echo "$TEST_TARGETS" | while read target; do
-              bazel test --test_output=errors --verbose_failures "$target" 2>&1 || echo "Test $target failed or unavailable"
+              bazel test --test_output=errors --verbose_failures "$target" || echo "Test $target failed"
             done
           else
             echo "No Windows-compatible test targets found"
