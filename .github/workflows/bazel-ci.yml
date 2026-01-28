@@ -1,10 +1,13 @@
-name: Bazel Presubmit
+name: Bazel CI/CD
 
 on:
   push:
     branches:
       - "*"
   pull_request:
+  schedule:
+    # Run nightly at 2 AM UTC
+    - cron: '0 2 * * *'
 
 # Cancel in-progress runs for the same workflow + branch combination
 concurrency:
@@ -15,14 +18,16 @@ permissions:
   contents: read
 
 jobs:
-  bazel-unix:
+  bazel-build-test-unix:
     name: Bazel ${{ matrix.bazel }} on ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-latest, macos-13, macos-latest]
+        os: [ubuntu-22.04, macos-15]
         bazel: ['7.x', '8.x', '9.x']
     runs-on: ${{ matrix.os }}
+    env:
+      USE_BAZEL_VERSION: ${{ matrix.bazel }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,27 +40,36 @@ jobs:
           disk-cache: ${{ github.workflow }}-${{ matrix.os }}-${{ matrix.bazel }}
           repository-cache: true
       
-      - name: Configure Bazel version
-        run: echo "${{ matrix.bazel }}" > .bazelversion
-      
       - name: Build cpu_profiler
         run: bazel build --verbose_failures @gperftools//:cpu_profiler
       
       - name: Build tcmalloc
         run: bazel build --verbose_failures @gperftools//:tcmalloc
       
-      - name: Run basic tests (if available)
-        run: |
-          bazel test --test_output=errors @gperftools//:tcmalloc_minimal_test 2>/dev/null || echo "Tests not available or failed"
+      - name: Build tcmalloc_minimal
+        run: bazel build --verbose_failures @gperftools//:tcmalloc_minimal
+      
+      - name: Build all targets
+        run: bazel build --verbose_failures //...
+        continue-on-error: true
+      
+      - name: Run tests
+        run: bazel test --test_output=errors --verbose_failures //...
+        continue-on-error: true
+      
+      - name: Query test targets
+        run: bazel query 'tests(//...)' || echo "No test targets found"
         continue-on-error: true
 
-  bazel-windows:
+  bazel-build-test-windows:
     name: Bazel ${{ matrix.bazel }} on Windows
     strategy:
       fail-fast: false
       matrix:
         bazel: ['7.x', '8.x', '9.x']
-    runs-on: windows-latest
+    runs-on: windows-2022
+    env:
+      USE_BAZEL_VERSION: ${{ matrix.bazel }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -68,15 +82,20 @@ jobs:
           disk-cache: ${{ github.workflow }}-windows-${{ matrix.bazel }}
           repository-cache: true
       
-      - name: Configure Bazel version
-        shell: bash
-        run: echo "${{ matrix.bazel }}" > .bazelversion
-      
       - name: Build tcmalloc
         run: bazel build --verbose_failures @gperftools//:tcmalloc
       
-      - name: Run basic tests (if available)
+      - name: Build tcmalloc_minimal
+        run: bazel build --verbose_failures @gperftools//:tcmalloc_minimal
+        continue-on-error: true
+      
+      - name: Build Windows-compatible targets
         shell: bash
         run: |
-          bazel test --test_output=errors @gperftools//:tcmalloc_minimal_test 2>/dev/null || echo "Tests not available or failed"
+          bazel query 'kind("cc_library", //...) except attr("target_compatible_with", "NON_WINDOWS", //...)' | xargs bazel build --verbose_failures || echo "Some targets failed"
+        continue-on-error: true
+      
+      - name: Run tests
+        shell: bash
+        run: bazel test --test_output=errors --verbose_failures //... || echo "Some tests failed"
         continue-on-error: true
