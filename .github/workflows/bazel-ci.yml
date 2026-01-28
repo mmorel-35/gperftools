@@ -57,13 +57,13 @@ jobs:
       
       - name: Query and build all buildable targets
         run: |
-          bazel query 'kind("cc_.*", //...)' 2>/dev/null | grep -v test | xargs -r bazel build --keep_going --verbose_failures 2>&1 || echo "Some targets failed to build"
+          bazel query --keep_going 'kind("cc_.*", //...) except //vendor/...' 2>/dev/null | grep -E "^//" | grep -v "_test$" | xargs -r bazel build --keep_going --verbose_failures 2>&1 || echo "Some targets failed to build"
         continue-on-error: true
       
       - name: Run tests with proper filtering
         run: |
           # Query for test targets first
-          TEST_TARGETS=$(bazel query 'tests(//...)' 2>/dev/null | grep -v "vendor/" || echo "")
+          TEST_TARGETS=$(bazel query --keep_going 'tests(//...) except //vendor/...' 2>/dev/null | grep -E "^//" || echo "")
           if [ -n "$TEST_TARGETS" ]; then
             echo "$TEST_TARGETS" | xargs bazel test --test_output=errors --verbose_failures --keep_going 2>&1 || echo "Some tests failed"
           else
@@ -110,7 +110,7 @@ jobs:
         shell: bash
         run: |
           # Query Windows-compatible targets and build them one by one to avoid xargs issues
-          TARGETS=$(bazel query 'kind("cc_library", //...) except attr("target_compatible_with", "NON_WINDOWS", //...)' 2>/dev/null | grep -v "vendor/" | grep -v "test" || echo "")
+          TARGETS=$(bazel query --keep_going 'kind("cc_library", //...) except //vendor/... except attr("target_compatible_with", "NON_WINDOWS", //...)' 2>/dev/null | grep -E "^//" | grep -v "_test$" || echo "")
           if [ -n "$TARGETS" ]; then
             echo "$TARGETS" | while read target; do
               bazel build --verbose_failures --keep_going "$target" 2>&1 || echo "Failed to build $target"
@@ -124,7 +124,7 @@ jobs:
         shell: bash
         run: |
           # Query for test targets that are Windows-compatible
-          TEST_TARGETS=$(bazel query 'tests(//...) except attr("target_compatible_with", "NON_WINDOWS", tests(//...))' 2>/dev/null | grep -v "vendor/" || echo "")
+          TEST_TARGETS=$(bazel query --keep_going 'tests(//...) except //vendor/... except attr("target_compatible_with", "NON_WINDOWS", tests(//...))' 2>/dev/null | grep -E "^//" || echo "")
           if [ -n "$TEST_TARGETS" ]; then
             echo "$TEST_TARGETS" | while read target; do
               bazel test --test_output=errors --verbose_failures "$target" 2>&1 || echo "Test $target failed or unavailable"
