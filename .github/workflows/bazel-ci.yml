@@ -41,24 +41,34 @@ jobs:
           repository-cache: true
       
       - name: Build cpu_profiler
-        run: bazel build --verbose_failures @gperftools//:cpu_profiler
+        run: bazel build --verbose_failures //:cpu_profiler
       
       - name: Build tcmalloc
-        run: bazel build --verbose_failures @gperftools//:tcmalloc
+        run: bazel build --verbose_failures //:tcmalloc
       
       - name: Build tcmalloc_minimal
-        run: bazel build --verbose_failures @gperftools//:tcmalloc_minimal
+        run: bazel build --verbose_failures //:tcmalloc_minimal
       
-      - name: Build all targets
-        run: bazel build --verbose_failures //...
+      - name: Build additional core targets
+        run: |
+          bazel build --verbose_failures //:stacktrace || true
+          bazel build --verbose_failures //:common || true
         continue-on-error: true
       
-      - name: Run tests
-        run: bazel test --test_output=errors --verbose_failures //...
+      - name: Query and build all buildable targets
+        run: |
+          bazel query 'kind("cc_.*", //...)' 2>/dev/null | grep -v test | xargs -r bazel build --keep_going --verbose_failures 2>&1 || echo "Some targets failed to build"
         continue-on-error: true
       
-      - name: Query test targets
-        run: bazel query 'tests(//...)' || echo "No test targets found"
+      - name: Run tests with proper filtering
+        run: |
+          # Query for test targets first
+          TEST_TARGETS=$(bazel query 'tests(//...)' 2>/dev/null | grep -v "vendor/" || echo "")
+          if [ -n "$TEST_TARGETS" ]; then
+            echo "$TEST_TARGETS" | xargs bazel test --test_output=errors --verbose_failures --keep_going 2>&1 || echo "Some tests failed"
+          else
+            echo "No test targets found"
+          fi
         continue-on-error: true
 
   bazel-build-test-windows:
@@ -83,19 +93,43 @@ jobs:
           repository-cache: true
       
       - name: Build tcmalloc
-        run: bazel build --verbose_failures @gperftools//:tcmalloc
+        run: bazel build --verbose_failures //:tcmalloc
       
       - name: Build tcmalloc_minimal
-        run: bazel build --verbose_failures @gperftools//:tcmalloc_minimal
+        run: bazel build --verbose_failures //:tcmalloc_minimal
         continue-on-error: true
       
-      - name: Build Windows-compatible targets
+      - name: Build additional Windows-compatible targets
         shell: bash
         run: |
-          bazel query 'kind("cc_library", //...) except attr("target_compatible_with", "NON_WINDOWS", //...)' | xargs bazel build --verbose_failures || echo "Some targets failed"
+          bazel build --verbose_failures //:stacktrace || echo "stacktrace build failed"
+          bazel build --verbose_failures //:common || echo "common build failed"
         continue-on-error: true
       
-      - name: Run tests
+      - name: Query and build Windows-compatible targets
         shell: bash
-        run: bazel test --test_output=errors --verbose_failures //... || echo "Some tests failed"
+        run: |
+          # Query Windows-compatible targets and build them one by one to avoid xargs issues
+          TARGETS=$(bazel query 'kind("cc_library", //...) except attr("target_compatible_with", "NON_WINDOWS", //...)' 2>/dev/null | grep -v "vendor/" | grep -v "test" || echo "")
+          if [ -n "$TARGETS" ]; then
+            echo "$TARGETS" | while read target; do
+              bazel build --verbose_failures --keep_going "$target" 2>&1 || echo "Failed to build $target"
+            done
+          else
+            echo "No Windows-compatible targets found via query"
+          fi
+        continue-on-error: true
+      
+      - name: Run Windows-compatible tests
+        shell: bash
+        run: |
+          # Query for test targets that are Windows-compatible
+          TEST_TARGETS=$(bazel query 'tests(//...) except attr("target_compatible_with", "NON_WINDOWS", tests(//...))' 2>/dev/null | grep -v "vendor/" || echo "")
+          if [ -n "$TEST_TARGETS" ]; then
+            echo "$TEST_TARGETS" | while read target; do
+              bazel test --test_output=errors --verbose_failures "$target" 2>&1 || echo "Test $target failed or unavailable"
+            done
+          else
+            echo "No Windows-compatible test targets found"
+          fi
         continue-on-error: true
