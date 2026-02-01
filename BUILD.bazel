@@ -433,6 +433,7 @@ cc_library(
         "src/thread_cache_ptr.cc",
     ] + select({
         "@platforms//os:windows": [
+            "src/windows/patch_functions.cc",
             "src/windows/system-alloc.cc",
         ],
         "//conditions:default": [
