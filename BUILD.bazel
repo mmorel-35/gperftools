@@ -295,6 +295,7 @@ cc_library(
     deps = [
         ":all_headers",
         ":libbacktrace",
+        ":low_level_alloc",
     ],
 )
 
