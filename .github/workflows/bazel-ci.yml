@@ -89,43 +89,13 @@ jobs:
           disk-cache: ${{ github.workflow }}-windows-${{ matrix.bazel }}
           repository-cache: true
       
+      # Note: tcmalloc library builds on Windows, but full heap profiling features 
+      # (used by tcmalloc_test) are not yet supported. tcmalloc_minimal works fully.
       - name: Build tcmalloc
         run: bazel build --verbose_failures //:tcmalloc
       
       - name: Build tcmalloc_minimal
         run: bazel build --verbose_failures //:tcmalloc_minimal
       
-      - name: Build additional Windows-compatible targets
-        shell: bash
-        run: |
-          bazel build --verbose_failures //:stacktrace
-          bazel build --verbose_failures //:common
-        continue-on-error: true
-      
-      - name: Query and build Windows-compatible targets
-        shell: bash
-        run: |
-          # Query Windows-compatible targets and build them one by one to avoid xargs issues
-          TARGETS=$(bazel query --keep_going 'kind("cc_library", //...) except //vendor/... except attr("target_compatible_with", "NON_WINDOWS", //...)' 2>/dev/null | grep -E "^//" | grep -v "_test$" || echo "")
-          if [ -n "$TARGETS" ]; then
-            echo "$TARGETS" | while read target; do
-              bazel build --verbose_failures --keep_going "$target" || echo "Failed to build $target"
-            done
-          else
-            echo "No Windows-compatible targets found via query"
-          fi
-        continue-on-error: true
-      
-      - name: Run Windows-compatible tests
-        shell: bash
-        run: |
-          # Query for test targets that are Windows-compatible
-          TEST_TARGETS=$(bazel query --keep_going 'tests(//...) except //vendor/... except attr("target_compatible_with", "NON_WINDOWS", tests(//...))' 2>/dev/null | grep -E "^//" || echo "")
-          if [ -n "$TEST_TARGETS" ]; then
-            echo "$TEST_TARGETS" | while read target; do
-              bazel test --test_output=errors --verbose_failures "$target" || echo "Test $target failed"
-            done
-          else
-            echo "No Windows-compatible test targets found"
-          fi
-        continue-on-error: true
+      - name: Run tcmalloc_minimal_test
+        run: bazel test --test_output=errors --verbose_failures //:tcmalloc_minimal_test
