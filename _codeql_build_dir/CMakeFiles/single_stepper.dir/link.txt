@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsingle_stepper.a CMakeFiles/single_stepper.dir/src/base/single_stepper.cc.o
+/usr/bin/ranlib libsingle_stepper.a

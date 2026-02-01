@@ -1,0 +1,42 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/tcmalloc_minimal.dir/link.d"
+  "CMakeFiles/tcmalloc_minimal.dir/src/central_freelist.cc.o"
+  "CMakeFiles/tcmalloc_minimal.dir/src/central_freelist.cc.o.d"
+  "CMakeFiles/tcmalloc_minimal.dir/src/common.cc.o"
+  "CMakeFiles/tcmalloc_minimal.dir/src/common.cc.o.d"
+  "CMakeFiles/tcmalloc_minimal.dir/src/internal_logging.cc.o"
+  "CMakeFiles/tcmalloc_minimal.dir/src/internal_logging.cc.o.d"
+  "CMakeFiles/tcmalloc_minimal.dir/src/malloc_extension.cc.o"
+  "CMakeFiles/tcmalloc_minimal.dir/src/malloc_extension.cc.o.d"
+  "CMakeFiles/tcmalloc_minimal.dir/src/malloc_hook.cc.o"
+  "CMakeFiles/tcmalloc_minimal.dir/src/malloc_hook.cc.o.d"
+  "CMakeFiles/tcmalloc_minimal.dir/src/memfs_malloc.cc.o"
+  "CMakeFiles/tcmalloc_minimal.dir/src/memfs_malloc.cc.o.d"
+  "CMakeFiles/tcmalloc_minimal.dir/src/page_heap.cc.o"
+  "CMakeFiles/tcmalloc_minimal.dir/src/page_heap.cc.o.d"
+  "CMakeFiles/tcmalloc_minimal.dir/src/safe_strerror.cc.o"
+  "CMakeFiles/tcmalloc_minimal.dir/src/safe_strerror.cc.o.d"
+  "CMakeFiles/tcmalloc_minimal.dir/src/sampler.cc.o"
+  "CMakeFiles/tcmalloc_minimal.dir/src/sampler.cc.o.d"
+  "CMakeFiles/tcmalloc_minimal.dir/src/span.cc.o"
+  "CMakeFiles/tcmalloc_minimal.dir/src/span.cc.o.d"
+  "CMakeFiles/tcmalloc_minimal.dir/src/stack_trace_table.cc.o"
+  "CMakeFiles/tcmalloc_minimal.dir/src/stack_trace_table.cc.o.d"
+  "CMakeFiles/tcmalloc_minimal.dir/src/static_vars.cc.o"
+  "CMakeFiles/tcmalloc_minimal.dir/src/static_vars.cc.o.d"
+  "CMakeFiles/tcmalloc_minimal.dir/src/system-alloc.cc.o"
+  "CMakeFiles/tcmalloc_minimal.dir/src/system-alloc.cc.o.d"
+  "CMakeFiles/tcmalloc_minimal.dir/src/tcmalloc.cc.o"
+  "CMakeFiles/tcmalloc_minimal.dir/src/tcmalloc.cc.o.d"
+  "CMakeFiles/tcmalloc_minimal.dir/src/thread_cache.cc.o"
+  "CMakeFiles/tcmalloc_minimal.dir/src/thread_cache.cc.o.d"
+  "CMakeFiles/tcmalloc_minimal.dir/src/thread_cache_ptr.cc.o"
+  "CMakeFiles/tcmalloc_minimal.dir/src/thread_cache_ptr.cc.o.d"
+  "libtcmalloc_minimal.pdb"
+  "libtcmalloc_minimal.so"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/tcmalloc_minimal.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

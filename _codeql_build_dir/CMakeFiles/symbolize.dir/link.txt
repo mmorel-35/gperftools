@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsymbolize.a CMakeFiles/symbolize.dir/src/symbolize.cc.o "CMakeFiles/symbolize.dir/vendor/libbacktrace-integration/backtrace-alloc.cc.o"
+/usr/bin/ranlib libsymbolize.a
