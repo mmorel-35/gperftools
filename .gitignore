@@ -172,3 +172,4 @@
 /vendor/libbacktrace-integration/.dirstamp
 /vendor/libbacktrace/.deps
 /vendor/libbacktrace/.dirstamp
+_codeql_build_dir/

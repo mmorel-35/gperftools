@@ -1,1 +1,0 @@
-/home/runner/work/gperftools/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++ -fPIC  -Wall -Wwrite-strings -Woverloaded-virtual -Wno-sign-compare -fsized-deallocation -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/run_benchmark.dir/link.d -shared -Wl,-soname,librun_benchmark.so -o librun_benchmark.so CMakeFiles/run_benchmark.dir/benchmark/run_benchmark.cc.o

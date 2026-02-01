@@ -1,2 +1,0 @@
-/usr/bin/ar qc libstacktrace.a CMakeFiles/stacktrace.dir/src/stacktrace.cc.o CMakeFiles/stacktrace.dir/src/base/elf_mem_image.cc.o CMakeFiles/stacktrace.dir/src/base/vdso_support.cc.o
-/usr/bin/ranlib libstacktrace.a
