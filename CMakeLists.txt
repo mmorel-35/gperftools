@@ -821,16 +821,23 @@ if(GPERFTOOLS_BUILD_HEAP_PROFILER)
 
     # These unittests often need to run binaries.  They're in the current dir
     list(APPEND TESTS_ENVIRONMENT BINDIR=. TMPDIR=/tmp/perftools)
-    set(sampling_test_SOURCES src/tests/sampling_test.cc)
-    add_executable(sampling_test src/tests/sampling_test.cc)
-    target_link_libraries(sampling_test tcmalloc)
-    add_test(sampling_test sampling_test)
+    
+    # sampling_test requires regex.h (POSIX regular expressions) not available on Windows
+    if(NOT MINGW AND NOT MSVC)
+      set(sampling_test_SOURCES src/tests/sampling_test.cc)
+      add_executable(sampling_test src/tests/sampling_test.cc)
+      target_link_libraries(sampling_test tcmalloc)
+      add_test(sampling_test sampling_test)
+    endif()
 
+    # heap-profiler_unittest requires fork/wait (POSIX process management) not available on Windows
     if(GPERFTOOLS_BUILD_HEAP_PROFILER)
-      add_executable(heap-profiler_unittest src/tests/heap-profiler_unittest.cc)
-      target_link_libraries(heap-profiler_unittest tcmalloc)
-      add_test(NAME heap-profiler_unittest.sh
-              COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/src/tests/heap-profiler_unittest.sh" "${CMAKE_CURRENT_BINARY_DIR}/heap-profiler_unittest")
+      if(NOT MINGW AND NOT MSVC)
+        add_executable(heap-profiler_unittest src/tests/heap-profiler_unittest.cc)
+        target_link_libraries(heap-profiler_unittest tcmalloc)
+        add_test(NAME heap-profiler_unittest.sh
+                COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/src/tests/heap-profiler_unittest.sh" "${CMAKE_CURRENT_BINARY_DIR}/heap-profiler_unittest")
+      endif()
     endif()
   endif()
 
@@ -852,14 +859,20 @@ if(GPERFTOOLS_BUILD_DEBUGALLOC)
       target_link_libraries(tcmalloc_debug_unittest tcmalloc_debug gtest single_stepper)
       add_test(tcmalloc_debug_unittest tcmalloc_debug_unittest)
 
-      add_executable(sampling_debug_test src/tests/sampling_test.cc)
-      target_link_libraries(sampling_debug_test tcmalloc_debug)
-      add_test(sampling_debug_test sampling_debug_test)
+      # sampling_debug_test requires regex.h (POSIX) not available on Windows
+      if(NOT MINGW AND NOT MSVC)
+        add_executable(sampling_debug_test src/tests/sampling_test.cc)
+        target_link_libraries(sampling_debug_test tcmalloc_debug)
+        add_test(sampling_debug_test sampling_debug_test)
+      endif()
 
+      # heap-profiler_debug_unittest requires fork/wait (POSIX) not available on Windows
       if(GPERFTOOLS_BUILD_HEAP_PROFILER)
-        add_executable(heap-profiler_debug_unittest src/tests/heap-profiler_unittest.cc)
-        target_link_libraries(heap-profiler_debug_unittest tcmalloc_debug)
-        add_test(heap-profiler_debug_unittest.sh "${CMAKE_CURRENT_SOURCE_DIR}/src/tests/heap-profiler_unittest.sh" "${CMAKE_CURRENT_BINARY_DIR}/heap-profiler_debug_unittest")
+        if(NOT MINGW AND NOT MSVC)
+          add_executable(heap-profiler_debug_unittest src/tests/heap-profiler_unittest.cc)
+          target_link_libraries(heap-profiler_debug_unittest tcmalloc_debug)
+          add_test(heap-profiler_debug_unittest.sh "${CMAKE_CURRENT_SOURCE_DIR}/src/tests/heap-profiler_unittest.sh" "${CMAKE_CURRENT_BINARY_DIR}/heap-profiler_debug_unittest")
+        endif()
       endif()
     endif()
   endif()
