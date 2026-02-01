@@ -101,6 +101,7 @@ jobs:
         run: |
           bazel build --verbose_failures //:tcmalloc_bench
           bazel build --verbose_failures //:basic_benchmark
+        # TODO: Remove continue-on-error once benchmarks are verified stable on Windows
         continue-on-error: true
       
       - name: Run tcmalloc_minimal_test
@@ -108,4 +109,5 @@ jobs:
       
       - name: Run tcmalloc_test (heap profiler)
         run: bazel test --test_output=errors --verbose_failures //:tcmalloc_test
+        # TODO: Remove continue-on-error once heap profiler tests are verified stable on Windows
         continue-on-error: true
