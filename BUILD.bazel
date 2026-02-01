@@ -598,6 +598,8 @@ cc_test(
         "src/tests/testutil.h",
     ],
     copts = CXXFLAGS,
+    # Full tcmalloc with heap profiling not yet supported on Windows
+    target_compatible_with = NON_WINDOWS,
     deps = [
         ":all_headers",
         ":single_stepper",
