@@ -28,7 +28,10 @@ CXXFLAGS_FOR_GCC = CFLAGS_FOR_GCC + [
 ]
 
 CXXFLAGS = select({
-    ":is_msvc": ["/std:c++17 /D_WIN32_WINNT=0x0602"],
+    ":is_msvc": [
+        "/std:c++17",
+        "/D_WIN32_WINNT=0x0602",
+    ],
     "//conditions:default": CXXFLAGS_FOR_GCC,
     ":is_clang": CXXFLAGS_FOR_GCC + ["-Wthread-safety"],
 })
