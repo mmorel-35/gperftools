@@ -806,9 +806,12 @@ if(GPERFTOOLS_BUILD_HEAP_PROFILER)
     target_link_libraries(tcmalloc_large_heap_fragmentation_unittest tcmalloc gtest)
     add_test(tcmalloc_large_heap_fragmentation_unittest tcmalloc_large_heap_fragmentation_unittest)
 
-    add_executable(heap_checker_stub_test src/tests/heap-checker-stub-test.cc)
-    target_link_libraries(heap_checker_stub_test tcmalloc)
-    add_test(heap_checker_stub_test heap_checker_stub_test)
+    # heap_checker is Linux-only, stub implementation doesn't export properly from Windows DLL
+    if(NOT MINGW AND NOT MSVC)
+      add_executable(heap_checker_stub_test src/tests/heap-checker-stub-test.cc)
+      target_link_libraries(heap_checker_stub_test tcmalloc)
+      add_test(heap_checker_stub_test heap_checker_stub_test)
+    endif()
 
     add_executable(sampler_test src/tests/sampler_test.cc
       src/sampler.cc
@@ -816,7 +819,12 @@ if(GPERFTOOLS_BUILD_HEAP_PROFILER)
       src/base/spinlock_internal.cc
       src/base/sysinfo.cc
       src/base/logging.cc)
-    target_link_libraries(sampler_test gtest)
+    # On Windows, sampler_test needs common library for WriteToStderr (in port.cc)
+    if(MINGW OR MSVC)
+      target_link_libraries(sampler_test gtest common)
+    else()
+      target_link_libraries(sampler_test gtest)
+    endif()
     add_test(sampler_test sampler_test)
 
     # These unittests often need to run binaries.  They're in the current dir
