@@ -465,10 +465,17 @@ endif()
 
 if(WITH_STACK_TRACE)
   ### Making the library
-  add_library(stacktrace STATIC
-    src/stacktrace.cc
-    src/base/elf_mem_image.cc
-    src/base/vdso_support.cc)
+  if(MINGW OR MSVC)
+    # Windows: stacktrace without ELF-specific files
+    add_library(stacktrace STATIC
+      src/stacktrace.cc)
+  else()
+    # Unix/Linux: stacktrace with ELF support
+    add_library(stacktrace STATIC
+      src/stacktrace.cc
+      src/base/elf_mem_image.cc
+      src/base/vdso_support.cc)
+  endif()
   target_link_libraries(stacktrace PRIVATE ${unwind_libs})
   if(BUILD_SHARED_LIBS)
     set_property(TARGET stacktrace
@@ -476,11 +483,19 @@ if(WITH_STACK_TRACE)
   endif()
 
   if(BUILD_TESTING)
-    add_executable(stacktrace_unittest
-      src/tests/stacktrace_unittest.cc
-      src/stacktrace.cc
-      src/base/elf_mem_image.cc
-      src/base/vdso_support.cc)
+    if(MINGW OR MSVC)
+      # Windows: stacktrace_unittest without ELF-specific files
+      add_executable(stacktrace_unittest
+        src/tests/stacktrace_unittest.cc
+        src/stacktrace.cc)
+    else()
+      # Unix/Linux: stacktrace_unittest with ELF support
+      add_executable(stacktrace_unittest
+        src/tests/stacktrace_unittest.cc
+        src/stacktrace.cc
+        src/base/elf_mem_image.cc
+        src/base/vdso_support.cc)
+    endif()
     target_link_libraries(stacktrace_unittest ${unwind_libs} common gtest)
     target_compile_definitions(stacktrace_unittest PRIVATE STACKTRACE_IS_TESTED PERFTOOLS_DLL_DECL= )
     add_test(stacktrace_unittest stacktrace_unittest)
