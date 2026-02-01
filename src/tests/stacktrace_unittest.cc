@@ -267,6 +267,7 @@ int ATTRIBUTE_NOINLINE CaptureLeafWSkip(void** stack, int stack_len) {
 }
 
 void ATTRIBUTE_NOINLINE CheckStackTrace(int);
+void ATTRIBUTE_NOINLINE CheckStackTraceLeaf(int);
 
 int (*leaf_capture_fn)(void**, int);
 int leaf_capture_len;
