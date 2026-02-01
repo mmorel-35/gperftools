@@ -741,16 +741,19 @@ if(GPERFTOOLS_BUILD_DEBUGALLOC)
 endif()
 
 if(gperftools_build_benchmark)
-  add_library(run_benchmark SHARED benchmark/run_benchmark.cc)
+  # Use STATIC library on Windows to avoid DLL/lib file timing issues in parallel builds
+  if(MINGW OR MSVC)
+    add_library(run_benchmark STATIC benchmark/run_benchmark.cc)
+  else()
+    add_library(run_benchmark SHARED benchmark/run_benchmark.cc)
+  endif()
 
   add_executable(malloc_bench benchmark/malloc_bench.cc)
   target_link_libraries(malloc_bench tcmalloc_minimal run_benchmark)
-  add_dependencies(malloc_bench run_benchmark)
 
   if(GPERFTOOLS_BUILD_HEAP_PROFILER)
     add_executable(malloc_bench_shared_full benchmark/malloc_bench.cc)
     target_link_libraries(malloc_bench_shared_full run_benchmark tcmalloc)
-    add_dependencies(malloc_bench_shared_full run_benchmark)
   endif()
 
   # binary_trees uses pthread.h which is not available on Windows
