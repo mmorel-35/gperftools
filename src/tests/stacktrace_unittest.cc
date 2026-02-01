@@ -132,12 +132,12 @@ void CheckRetAddrIsInFunction(void* ret_addr, const AddressRange& range) {
 
 //-----------------------------------------------------------------------//
 
+extern "C" {
+
 // Forward declarations for functions used in INIT_ADDRESS_RANGE macros
 // On MSVC, the macro expands to &fn, so we need these declared early
 void ATTRIBUTE_NOINLINE CheckStackTrace(int);
 void ATTRIBUTE_NOINLINE CheckStackTraceLeaf(int);
-
-extern "C" {
 
 #if TEST_UCONTEXT_BITS
 
