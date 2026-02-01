@@ -1,11 +1,22 @@
 --- COMPILING
 
-This project has begun being ported to Windows, only tcmalloc_minimal
-is supported at this time.  A working solution file exists in this
-directory:
+This project supports Windows with the following components:
+- tcmalloc_minimal: Fully supported (basic memory allocation)
+- tcmalloc (with heap profiler): Supported via CMake/Bazel builds
+- Benchmarks: Supported for performance testing
+- CPU profiler: Not yet supported (requires signal handling work)
+- Debug allocator: Not yet supported (requires symbol resolution)
+
+For Visual Studio users, a working solution file exists in this directory:
     gperftools.sln
 
-You can load this solution file into Visual Studio 2015 or
+For CMake users, the following targets are now available on Windows:
+- tcmalloc_minimal: Basic memory allocator
+- tcmalloc: Memory allocator with heap profiling support
+- malloc_bench: Memory allocation benchmark
+- binary_trees: Benchmark test program
+
+You can load the solution file into Visual Studio 2015 or
 later -- in the latter case, it will automatically convert the files
 to the latest format for you.
 
@@ -62,12 +73,20 @@ fragile), though more work to set up.  For details, see
 
 --- THE HEAP-PROFILER
 
-The heap-profiler has had a preliminary port to Windows but does not
-build on Windows by default.  It has not been well tested, and
-probably does not work at all when Frame Pointer Optimization (FPO) is
-enabled -- that is, in release mode.  The other features of perftools,
-such as the cpu-profiler and leak-checker, have not yet been ported to
-Windows at all.
+The heap-profiler is now supported on Windows when building with CMake or Bazel.
+Use the tcmalloc library (not tcmalloc_minimal) to enable heap profiling.
+The heap profiler allows you to track memory allocations and identify memory leaks.
+
+Note: The heap profiler works on Windows but with limited stack trace symbol
+resolution. For best results, build with debug symbols enabled.
+
+To enable heap profiling in your application:
+1. Link against tcmalloc (not tcmalloc_minimal)
+2. Set environment variable HEAPPROFILE to specify output file prefix
+3. Run your application normally
+
+The other features of perftools, such as the cpu-profiler and 
+debugalloc, have not yet been ported to Windows.
 
 
 --- ISSUES
@@ -93,5 +112,6 @@ them on the gperftools Google Code site:
 
 -- craig
 -- updated by alk on 31 July 2023
+-- updated for heap profiler and benchmarks support on 1 February 2026
 
-Last modified: 31 July 2023
+Last modified: 1 February 2026

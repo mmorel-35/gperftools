@@ -134,6 +134,11 @@ void CheckRetAddrIsInFunction(void* ret_addr, const AddressRange& range) {
 
 extern "C" {
 
+// Forward declarations for functions used in INIT_ADDRESS_RANGE macros
+// On MSVC, the macro expands to &fn, so we need these declared early
+void ATTRIBUTE_NOINLINE CheckStackTrace(int);
+void ATTRIBUTE_NOINLINE CheckStackTraceLeaf(int);
+
 #if TEST_UCONTEXT_BITS
 
 struct get_stack_trace_args {
@@ -265,8 +270,6 @@ int ATTRIBUTE_NOINLINE CaptureLeafWSkip(void** stack, int stack_len) {
 
   return size;
 }
-
-void ATTRIBUTE_NOINLINE CheckStackTrace(int);
 
 int (*leaf_capture_fn)(void**, int);
 int leaf_capture_len;
