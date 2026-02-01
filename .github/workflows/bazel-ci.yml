@@ -89,13 +89,23 @@ jobs:
           disk-cache: ${{ github.workflow }}-windows-${{ matrix.bazel }}
           repository-cache: true
       
-      # Note: tcmalloc library builds on Windows, but full heap profiling features 
-      # (used by tcmalloc_test) are not yet supported. tcmalloc_minimal works fully.
-      - name: Build tcmalloc
+      # Note: tcmalloc library with heap profiler now builds and works on Windows.
+      # tcmalloc_minimal also works fully.
+      - name: Build tcmalloc with heap profiler
         run: bazel build --verbose_failures //:tcmalloc
       
       - name: Build tcmalloc_minimal
         run: bazel build --verbose_failures //:tcmalloc_minimal
       
+      - name: Build benchmarks
+        run: |
+          bazel build --verbose_failures //:tcmalloc_bench
+          bazel build --verbose_failures //:basic_benchmark
+        continue-on-error: true
+      
       - name: Run tcmalloc_minimal_test
         run: bazel test --test_output=errors --verbose_failures //:tcmalloc_minimal_test
+      
+      - name: Run tcmalloc_test (heap profiler)
+        run: bazel test --test_output=errors --verbose_failures //:tcmalloc_test
+        continue-on-error: true

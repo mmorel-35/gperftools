@@ -164,7 +164,7 @@ jobs:
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: |
-          ruby $GITHUB_WORKSPACE/.github/workflows/scripts/msvc-env.rb cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -G Ninja -DGPERFTOOLS_BUILD_HEAP_PROFILER=OFF -Dgperftools_build_minimal=ON $GITHUB_WORKSPACE
+          ruby $GITHUB_WORKSPACE/.github/workflows/scripts/msvc-env.rb cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -G Ninja -DGPERFTOOLS_BUILD_HEAP_PROFILER=ON -Dgperftools_build_benchmark=ON $GITHUB_WORKSPACE
       - name: cmake build
         working-directory: ${{runner.workspace}}/build
         shell: bash
