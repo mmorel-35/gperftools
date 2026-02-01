@@ -31,18 +31,13 @@
 #include "config.h"
 
 #include "gperftools/heap-checker.h"
+#include "base/basictypes.h"
 
 #include <assert.h>
 
 #include <string>
 
-#if defined __has_attribute
-#if __has_attribute(noinline)
-#define ATTR_NOINLINE __attribute__((noinline))
-#endif
-#endif
-
-ATTR_NOINLINE void partial() {
+ATTRIBUTE_NOINLINE void partial() {
   std::string str;
   for (int i = 0; i < 1024; i++) {
     str.append("-");
