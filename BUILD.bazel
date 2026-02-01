@@ -428,7 +428,6 @@ cc_library(
         "src/span.cc",
         "src/stack_trace_table.cc",
         "src/static_vars.cc",
-        "src/tcmalloc.cc",
         "src/thread_cache.cc",
         "src/thread_cache_ptr.cc",
     ] + select({
@@ -438,6 +437,7 @@ cc_library(
         ],
         "//conditions:default": [
             "src/system-alloc.cc",
+            "src/tcmalloc.cc",
         ],
     }),
     hdrs = [
@@ -457,6 +457,10 @@ cc_library(
     ],
     # note, bazel thingy is passing NDEBUG automagically in -c opt builds. So we're okay with that.
     local_defines = ["ENABLE_EMERGENCY_MALLOC"],
+    textual_hdrs = select({
+        "@platforms//os:windows": ["src/tcmalloc.cc"],
+        "//conditions:default": [],
+    }),
     visibility = ["//visibility:public"],
     deps = [
         ":all_headers",
