@@ -23,8 +23,10 @@ set(DEFAULT_TCMALLOC_ALIGNMENT 16)
 set(HOST string(TOLOWER "${CMAKE_SYSTEM_NAME}"))
 
 if(MINGW OR MSVC)
-  set(DEFAULT_BUILD_MINIMAL ON)
+  set(DEFAULT_BUILD_MINIMAL OFF)
   set(DEFAULT_BUILD_DEBUGALLOC OFF)
+  set(DEFAULT_BUILD_CPU_PROFILER OFF)
+  set(DEFAULT_BUILD_HEAP_PROFILER ON)
 elseif(CYGWIN)
   set(DEFAULT_BUILD_CPU_PROFILER OFF)
 endif()
@@ -89,8 +91,7 @@ if(gperftools_build_minimal)
   set(GPERFTOOLS_BUILD_HEAP_PROFILER OFF)
 endif()
 
-cmake_dependent_option(
-  gperftools_build_benchmark "Build benchmark" ON "NOT MINGW AND NOT MSVC" OFF)
+option(gperftools_build_benchmark "Build benchmark" ON)
 
 option(gperftools_enable_stacktrace_via_backtrace
        "Enable use of backtrace() for stacktrace capturing (may deadlock)"
@@ -721,23 +722,21 @@ if(GPERFTOOLS_BUILD_DEBUGALLOC)
   endif()
 endif()
 
-if(NOT MINGW AND NOT MSVC)
-  if(gperftools_build_benchmark)
-    add_library(run_benchmark benchmark/run_benchmark.cc)
+if(gperftools_build_benchmark)
+  add_library(run_benchmark benchmark/run_benchmark.cc)
 
-    add_executable(malloc_bench benchmark/malloc_bench.cc)
-    target_link_libraries(malloc_bench tcmalloc_minimal run_benchmark)
+  add_executable(malloc_bench benchmark/malloc_bench.cc)
+  target_link_libraries(malloc_bench tcmalloc_minimal run_benchmark)
 
-    if(GPERFTOOLS_BUILD_HEAP_PROFILER)
-      add_executable(malloc_bench_shared_full benchmark/malloc_bench.cc)
-      target_link_libraries(malloc_bench_shared_full run_benchmark tcmalloc)
-    endif()
-
-    add_executable(binary_trees benchmark/binary_trees.cc)
-    target_link_libraries(binary_trees tcmalloc_minimal)
-    add_executable(binary_trees_shared benchmark/binary_trees.cc)
-    target_link_libraries(binary_trees_shared tcmalloc_minimal)
+  if(GPERFTOOLS_BUILD_HEAP_PROFILER)
+    add_executable(malloc_bench_shared_full benchmark/malloc_bench.cc)
+    target_link_libraries(malloc_bench_shared_full run_benchmark tcmalloc)
   endif()
+
+  add_executable(binary_trees benchmark/binary_trees.cc)
+  target_link_libraries(binary_trees tcmalloc_minimal)
+  add_executable(binary_trees_shared benchmark/binary_trees.cc)
+  target_link_libraries(binary_trees_shared tcmalloc_minimal)
 endif()
 
 ### ------- tcmalloc (thread-caching malloc + heap profiler)
