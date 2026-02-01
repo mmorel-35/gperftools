@@ -751,10 +751,13 @@ if(gperftools_build_benchmark)
     target_link_libraries(malloc_bench_shared_full run_benchmark tcmalloc)
   endif()
 
-  add_executable(binary_trees benchmark/binary_trees.cc)
-  target_link_libraries(binary_trees tcmalloc_minimal)
-  add_executable(binary_trees_shared benchmark/binary_trees.cc)
-  target_link_libraries(binary_trees_shared tcmalloc_minimal)
+  # binary_trees uses pthread.h which is not available on Windows
+  if(NOT MINGW AND NOT MSVC)
+    add_executable(binary_trees benchmark/binary_trees.cc)
+    target_link_libraries(binary_trees tcmalloc_minimal)
+    add_executable(binary_trees_shared benchmark/binary_trees.cc)
+    target_link_libraries(binary_trees_shared tcmalloc_minimal)
+  endif()
 endif()
 
 ### ------- tcmalloc (thread-caching malloc + heap profiler)
